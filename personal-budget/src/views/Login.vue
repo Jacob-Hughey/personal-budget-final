@@ -4,7 +4,7 @@
             <div class="display-2 font-weight-black">
                 Log In
             </div>
-            <v-form ref="form" lazy-validation>
+            <v-form ref="form" v-model="isFormValid" lazy-validation>
                 <v-text-field
                     v-model="email"
                     :rules="emailRules"
@@ -18,15 +18,15 @@
                     :type="'password'"
                     required
                 ></v-text-field>
-                <v-btn
-                    :disabled="!valid"
-                    color="success"
-                    class="mr-4"
-                    @click="submit"
-                >
-                    Submit
-                </v-btn>
             </v-form>
+            <v-btn
+                :disabled="!isFormValid"
+                color="success"
+                class="mr-4"
+                @click="submit"
+            >
+                Submit
+            </v-btn>
         </v-layout>
     </v-container>
 </template>
@@ -34,7 +34,7 @@
 <script>
 export default {
     data: () => ({
-        valid: true,
+        isFormValid: false,
         email: '',
         emailRules: [
             v => !!v || 'Email is required',
@@ -43,7 +43,18 @@ export default {
         password: '',
         passwordRules: [v => !!v || 'Password is required']
     }),
-    name: 'Log-In'
+    name: 'Log-In',
+    methods: {
+        async submit() {
+            console.log(this.email);
+            if (this.isFormValid) {
+                this.$store.dispatch('LogIn', {
+                    email: this.email,
+                    password: this.password
+                });
+            }
+        }
+    }
 };
 </script>
 

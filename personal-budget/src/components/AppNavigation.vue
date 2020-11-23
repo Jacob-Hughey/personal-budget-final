@@ -28,14 +28,23 @@
                 <v-toolbar-title to="/">{{ appTitle }}</v-toolbar-title>
             </router-link>
             <v-spacer></v-spacer>
-            <v-btn text class="hidden-sm-and-down" to="/log-in">LOG IN</v-btn>
-            <v-btn
-                color="blue lighten-2"
-                class="hidden-sm-and-down"
-                to="/sign-up"
-            >
-                SIGN UP
-            </v-btn>
+            <span v-if="isLoggedIn">
+                <v-btn text class="hidden-sm-and-down" to="/" @click="logout">
+                    LOG OUT
+                </v-btn>
+            </span>
+            <span v-else>
+                <v-btn text class="hidden-sm-and-down" to="/log-in">
+                    LOG IN
+                </v-btn>
+                <v-btn
+                    color="blue lighten-2"
+                    class="hidden-sm-and-down"
+                    to="/sign-up"
+                >
+                    SIGN UP
+                </v-btn>
+            </span>
         </v-toolbar>
     </span>
 </template>
@@ -43,6 +52,17 @@
 <script>
 export default {
     name: 'AppNavigation',
+    computed: {
+        isLoggedIn: function() {
+            return this.$store.getters.isAuthenticated;
+        }
+    },
+    methods: {
+        async logout() {
+            await this.$store.dispatch('LogOut');
+            this.$router.push('/');
+        }
+    },
     data() {
         return {
             appTitle: 'Personal Budget',

@@ -1,0 +1,10 @@
+{
+  "host": "104.196.221.66",
+  "user": "server",
+  "password": "s3rv3rp@ssw0rd",
+  "ssl": {
+    "ca": "./ssl/server-ca.pem",
+    "key": "./ssl/client-cert.pem",
+    "cert": "./ssl/client-key.pem"
+  }
+}
