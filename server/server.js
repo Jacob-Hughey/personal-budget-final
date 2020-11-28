@@ -7,6 +7,7 @@ const config = require("./config.json");
 const fs = require("fs");
 
 const port = process.env.port || 3000;
+const serverless = require("serverless-http");
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -101,6 +102,8 @@ app.get("/fullBudgetInfo", async (req, res) => {
   });
 });
 
-app.listen(port, () => {
+/*app.listen(port, () => {
   console.log(`Server on port ${port}`);
-});
+});*/
+
+module.exports.handler = serverless(app);
