@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import firebase from 'firebase';
 import router from '@/router';
 import axios from 'axios';
 
@@ -15,44 +14,28 @@ export default new Vuex.Store({
     },
     actions: {
         async LogIn({ commit }, { email, password }) {
-            console.log('LogIn line 1');
-            console.log(email);
-            axios.get('localhost:3000/api/test').then(() => {
-                console.log(commit, password, 'worked?');
-            }).catch(error => {
-                console.log(error);
-            });
-            /*axios
-                .post('localhost:3000/api/login', {
-                    email: email,
-                    password: password
-                })
+            axios
+                .post(
+                    'https://us-central1-personal-budget-final.cloudfunctions.net/server/api/login',
+                    {
+                        email: email,
+                        password: password
+                    }
+                )
                 .then(() => {
                     commit('setUser', email);
                     router.push('/');
                 })
-                .catch(error => {
-                    alert(error);
-                    commit('setUser', null);
-                });
-                */
-            /*firebase
-                .auth()
-                .signInWithEmailAndPassword(email, password)
-                .then(user => {
-                    commit('setUser', user);
-                    router.push('/');
-                })
                 .catch(() => {
-                    alert('Email/password combination invalid');
+                    alert('Username and/or password incorrect');
                     commit('setUser', null);
                 });
-            */
         },
         async LogOut({ commit }) {
-            firebase
-                .auth()
-                .signOut()
+            axios
+                .post(
+                    'https://us-central1-personal-budget-final.cloudfunctions.net/server/api/logout'
+                )
                 .then(() => {
                     commit('setUser', null);
                     router.push('/');

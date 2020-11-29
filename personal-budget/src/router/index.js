@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
-import getters from '@/store.js';
+import store from '../store.js';
 
 Vue.use(VueRouter);
 
@@ -56,7 +56,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
     if (to.name == 'Home' || to.name == 'Sign-Up') {
         next();
-    } else if (to.name !== 'Log-In' && !getters.isAuthenticated) {
+    } else if (to.name !== 'Log-In' && !store.getters.isAuthenticated) {
         next({ name: 'Log-In' });
     } else next();
 });

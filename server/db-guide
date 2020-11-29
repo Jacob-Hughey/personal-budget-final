@@ -5,3 +5,8 @@ Columns: USER (Varchar(100))
          TITLE (Varchar(50))
          TOTAL (Decimal)
          AMOUNT_USED (Decimal)
+
+Views:
+  Budgets as percentage of whole (pie)
+  Used vs unused (total, as pie)
+  Used vs unused (each, as bar)
