@@ -54,7 +54,8 @@ export default {
     name: 'AppNavigation',
     computed: {
         isLoggedIn: function() {
-            return this.$store.getters.isAuthenticated;
+            //return this.$store.getters.isAuthenticated;
+            return this.$store.state.user;
         }
     },
     methods: {
