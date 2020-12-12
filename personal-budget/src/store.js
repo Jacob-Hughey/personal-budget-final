@@ -9,7 +9,8 @@ Vue.use(VueCookies);
 
 export default new Vuex.Store({
     state: {
-        user: Vue.$cookies.get('user')
+        user: Vue.$cookies.get('user'),
+        budget: Vue.$cookies.get('budget')
     },
     actions: {
         async LogIn({ commit }, { email, password }) {
@@ -60,6 +61,23 @@ export default new Vuex.Store({
                 .catch(() => {
                     alert('Signup failed, please try again.');
                 });
+        },
+        async GetBudget({ commit }) {
+            var date = new Date();
+            axios
+                .get(
+                    'https://us-central1-personal-budget-final.cloudfunctions.net/server/api/fullBudgetInfo',
+                    {
+                        user: this.state.user,
+                        monthYear: date.getMonth() + '_' + date.getFullYear()
+                    }
+                )
+                .then(response => {
+                    commit('setBudget', response.budget);
+                })
+                .catch(() => {
+                    alert('Error');
+                });
         }
     },
     mutations: {
@@ -70,6 +88,12 @@ export default new Vuex.Store({
         async removeUser(state) {
             Vue.$cookies.remove('user');
             state.user = null;
+            Vue.$cookies.remove('budget');
+            state.budget = null;
+        },
+        async setBudget(state, budget) {
+            Vue.$cookies.set('budget', budget);
+            state.budget = Vue.$cookies.get('budget');
         }
     }
 });

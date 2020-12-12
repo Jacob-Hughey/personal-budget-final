@@ -35,15 +35,12 @@ var firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
-var connection = mysql.createConnection({
-  host: config.host,
+const pool = mysql.createPool({
+  connectionLimit: 100,
+  socketPath: "/cloudsql/personal-budget-final:us-east1:personal-budget-db",
   user: config.user,
   password: config.password,
-  ssl: {
-    ca: fs.readFileSync(config.ssl.ca),
-    key: fs.readFileSync(config.ssl.key),
-    cert: fs.readFileSync(config.ssl.cert),
-  },
+  database: "PERSONAL_BUDGET",
 });
 
 app.use("/", express.static("public"));
@@ -88,84 +85,76 @@ app.get("/api/logout", async (req, res) => {
     });
 });
 
-app.get("/api/fullBudgetInfo", async (req, res) => {
+app.post("/api/fullBudgetInfo", async (req, res) => {
   const { user, monthYear } = req.body;
-  connection.connect();
-  connection.query(
-    `SELECT * FROM BUDGETS WHERE USER = ${user} AND MONTH_YEAR = ${monthYear}`,
-    function (error, results, fields) {
-      connection.end();
-      if (error) {
-        res.status(400).json({ response: `Error: ${error}` });
-      } else {
-        res.status(200).json(results);
+  pool.getConnection((error, connection) => {
+    if (error) throw error;
+    connection.query(
+      `SELECT * FROM BUDGETS WHERE USER = "${user}" AND MONTH_YEAR = "${monthYear}"`,
+      function (error, results, fields) {
+        connection.destroy();
+        if (error) {
+          res.status(400).json({ response: `Error: ${error}` });
+        } else {
+          res.status(200).json(results);
+        }
       }
-    }
-  );
-});
-
-app.get("/api/budgetNames", async (req, res) => {
-  const { user, monthYear } = req.body;
-  connection.connect();
-  connection.query(
-    `SELECT TITLE FROM BUDGETS WHERE USER = ${user} AND MONTH_YEAR = ${monthYear}`,
-    function (error, results, fields) {
-      connection.end();
-      if (error) {
-        res.status(400).json({ response: `Error: ${error}` });
-      } else {
-        res.status(200).json(results);
-      }
-    }
-  );
+    );
+  });
 });
 
 app.post("/api/addBudget", async (req, res) => {
   const { user, monthYear, newName, newTotal } = req.body;
-  connection.connect();
-  connection.query(
-    `INSERT INTO BUDGETS (USER, MONTH_YEAR, TITLE, TOTAL, AMOUNT_USED) VALUES (${user}, ${monthYear}, ${newName}, ${newTotal}, 0)`,
-    function (error, results, fields) {
-      connection.end();
-      if (error) {
-        res.status(400).json({ response: `Error: ${error}` });
-      } else {
-        res.status(200).json(results);
+  pool.getConnection((error, connection) => {
+    if (error) throw error;
+    connection.query(
+      `INSERT INTO BUDGETS (USER, MONTH_YEAR, TITLE, TOTAL, AMOUNT_USED) VALUES ("${user}", "${monthYear}", "${newName}", ${newTotal}, 0)`,
+      function (error, results, fields) {
+        connection.end();
+        if (error) {
+          res.status(400).json({ response: `Error: ${error}` });
+        } else {
+          res.status(200).json(results);
+        }
       }
-    }
-  );
+    );
+  });
 });
 
 app.post("/api/deleteBudget", async (req, res) => {
   const { user, monthYear, budgetName } = req.body;
-  connection.connect();
-  connection.query(
-    `DELETE FROM BUDGETS WHERE USER = ${user} AND MONTH_YEAR = ${monthYear} AND TITLE = ${budgetName}`,
-    function (error, results, fields) {
-      connection.end();
-      if (error) {
-        res.status(400).json({ response: `Error: ${error}` });
-      } else {
-        res.status(200).json({ response: "success" });
+  pool.getConnection((error, connection) => {
+    if (error) throw error;
+    connection.query(
+      `DELETE FROM BUDGETS WHERE USER = "${user}" AND MONTH_YEAR = "${monthYear}" AND TITLE = "${budgetName}"`,
+      function (error, results, fields) {
+        connection.end();
+        if (error) {
+          res.status(400).json({ response: `Error: ${error}` });
+        } else {
+          res.status(200).json({ response: "success" });
+        }
       }
-    }
-  );
+    );
+  });
 });
 
 app.post("/api/enterExpense", async (req, res) => {
   const { user, monthYear, budgetName, amount } = req.body;
-  connection.connect();
-  connection.query(
-    `UPDATE BUDGETS SET AMOUNT_USED = AMOUNT_USED + ${amount} WHERE USER = ${user} AND MONTH_YEAR = ${monthYear} AND TITLE = ${budgetName}`,
-    function (error, results, fields) {
-      connection.end();
-      if (error) {
-        res.status(400).json({ response: `Error: ${error}` });
-      } else {
-        res.status(200).json({ response: "success" });
+  pool.getConnection((error, connection) => {
+    if (error) throw error;
+    connection.query(
+      `UPDATE BUDGETS SET AMOUNT_USED = AMOUNT_USED + ${amount} WHERE USER = "${user}" AND MONTH_YEAR = "${monthYear}" AND TITLE = "${budgetName}"`,
+      function (error, results, fields) {
+        connection.end();
+        if (error) {
+          res.status(400).json({ response: `Error: ${error}` });
+        } else {
+          res.status(200).json({ response: "success" });
+        }
       }
-    }
-  );
+    );
+  });
 });
 
 app.listen(port, () => {

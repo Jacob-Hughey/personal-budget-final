@@ -1,7 +1,7 @@
 DB name: PERSONAL_BUDGET
 Table name: BUDGETS
 Columns: USER (Varchar(100))
-         MONTH_YEAR (Varchar(20)): set up like JAN_2020
+         MONTH_YEAR (Varchar(20)): set up like 1_2020
          TITLE (Varchar(50))
          TOTAL (Decimal)
          AMOUNT_USED (Decimal)

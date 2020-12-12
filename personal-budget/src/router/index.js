@@ -62,6 +62,11 @@ router.beforeEach((to, from, next) => {
         !store.state.user
     ) {
         next({ name: 'Log-In' });
+    } else if (
+        (to.name == 'Log-In' || to.name == 'Sign-Up') &&
+        store.state.user
+    ) {
+        next({ name: '/home' });
     } else next();
 });
 
