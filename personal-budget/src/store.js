@@ -144,6 +144,25 @@ export default new Vuex.Store({
                 .catch(() => {
                     alert('Error');
                 });
+        },
+        EnterExpense({ dispatch }, { label, expense }) {
+            var date = new Date();
+            axios
+                .post(
+                    'https://us-central1-personal-budget-final.cloudfunctions.net/server/api/enterExpense',
+                    {
+                        user: this.state.user,
+                        monthYear: date.getMonth() + '_' + date.getFullYear(),
+                        budgetName: label,
+                        amount: expense
+                    }
+                )
+                .then(() => {
+                    dispatch('GetBudget');
+                })
+                .catch(() => {
+                    alert('Error');
+                });
         }
     },
     mutations: {

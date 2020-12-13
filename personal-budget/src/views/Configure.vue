@@ -1,4 +1,3 @@
-import BudgetUsed from '@/components/BudgetUsed.js';
 <template>
     <v-container fluid>
         <v-row>
