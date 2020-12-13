@@ -6,20 +6,23 @@
                     <v-card-title primary-title class="justify-center">
                         All Budgets
                     </v-card-title>
+                    <All-Budgets></All-Budgets>
                 </v-card>
             </v-col>
             <v-col md="4">
                 <v-card outlined>
                     <v-card-title primary-title class="justify-center">
-                        Budget Used
+                        Total Budget Used
                     </v-card-title>
+                    <Budget-Used></Budget-Used>
                 </v-card>
             </v-col>
             <v-col md="4">
                 <v-card outlined>
                     <v-card-title primary-title class="justify-center">
-                        Usage Over Time
+                        Individual Budget Usage
                     </v-card-title>
+                    <Each-Budget-Used></Each-Budget-Used>
                 </v-card>
             </v-col>
         </v-row>
@@ -27,8 +30,17 @@
 </template>
 
 <script>
+import AllBudgets from '@/components/AllBudgets.js';
+import BudgetUsed from '@/components/BudgetUsed.js';
+import EachBudgetUsed from '@/components/EachBudgetUsed.js';
+
 export default {
-    name: 'Dashboard'
+    name: 'Dashboard',
+    components: {
+        AllBudgets,
+        BudgetUsed,
+        EachBudgetUsed
+    }
 };
 </script>
 

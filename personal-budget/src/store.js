@@ -13,7 +13,7 @@ export default new Vuex.Store({
         budget: Vue.$cookies.get('budget')
     },
     actions: {
-        async LogIn({ commit }, { email, password }) {
+        async LogIn({ commit, dispatch }, { email, password }) {
             axios
                 .post(
                     'https://us-central1-personal-budget-final.cloudfunctions.net/server/api/login',
@@ -25,6 +25,7 @@ export default new Vuex.Store({
                 .then(() => {
                     commit('setUser', email);
                     router.push('/');
+                    dispatch('GetBudget');
                 })
                 .catch(() => {
                     alert('Username and/or password incorrect');
@@ -62,10 +63,10 @@ export default new Vuex.Store({
                     alert('Signup failed, please try again.');
                 });
         },
-        async GetBudget({ commit }) {
+        GetBudget({ commit }) {
             var date = new Date();
             axios
-                .get(
+                .post(
                     'https://us-central1-personal-budget-final.cloudfunctions.net/server/api/fullBudgetInfo',
                     {
                         user: this.state.user,
@@ -73,7 +74,72 @@ export default new Vuex.Store({
                     }
                 )
                 .then(response => {
-                    commit('setBudget', response.budget);
+                    var budgets = {
+                        titles: [],
+                        totals: [],
+                        used: [],
+                        colors: []
+                    };
+                    function random_rgb() {
+                        var o = Math.round,
+                            r = Math.random,
+                            s = 255;
+                        return (
+                            'rgba(' +
+                            o(r() * s) +
+                            ',' +
+                            o(r() * s) +
+                            ',' +
+                            o(r() * s) +
+                            ',' +
+                            1 +
+                            ')'
+                        );
+                    }
+                    response.data.forEach(element => {
+                        budgets.titles.push(element.TITLE);
+                        budgets.totals.push(element.TOTAL);
+                        budgets.used.push(element.AMOUNT_USED);
+                        budgets.colors.push(random_rgb());
+                    });
+                    commit('setBudget', budgets);
+                })
+                .catch(() => {
+                    alert('Error');
+                });
+        },
+        DeleteBudget({ dispatch }, { label }) {
+            var date = new Date();
+            axios
+                .post(
+                    'https://us-central1-personal-budget-final.cloudfunctions.net/server/api/deleteBudget',
+                    {
+                        user: this.state.user,
+                        monthYear: date.getMonth() + '_' + date.getFullYear(),
+                        budgetName: label
+                    }
+                )
+                .then(() => {
+                    dispatch('GetBudget');
+                })
+                .catch(() => {
+                    alert('Error');
+                });
+        },
+        AddBudget({ dispatch }, { label, total }) {
+            var date = new Date();
+            axios
+                .post(
+                    'https://us-central1-personal-budget-final.cloudfunctions.net/server/api/addBudget',
+                    {
+                        user: this.state.user,
+                        monthYear: date.getMonth() + '_' + date.getFullYear(),
+                        newName: label,
+                        newTotal: total
+                    }
+                )
+                .then(() => {
+                    dispatch('GetBudget');
                 })
                 .catch(() => {
                     alert('Error');
